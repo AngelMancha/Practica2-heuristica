@@ -36,10 +36,29 @@ def no_al_lado(alumno_red, alumno_normie):
 problem.addConstraint(no_al_lado, ('alumno_1', 'alumno_2'))
 problem.addConstraint(no_al_lado, ('alumno_1', 'alumno_3'))
 
-
+# Tercera restricción: impide que un mismo asiento se le asigne a 2 alumnos
 def not_encima(alumno_1, alumno_2):
     if alumno_1 != alumno_2:
         return True
+
+# Cuarta restricción: Si un asiento para una persona de movilidad reducida no está asignado, cualquier otro alumno
+# se puede sentar en ese asiento: viene implícito en la forma en la que se ha modelado el problema
+
+
+# Quinta restricción: No puede haber 2 alumnos conflictivos juntos en los asientos adyacentes
+def comprobar_asientos_adyacentes(alumno_conflictivo1, alumno_conflictivo2):
+    for asiento in domain:
+        if alumno_conflictivo1 == asiento:
+            # comprobar asientos contiguos
+            if alumno_conflictivo2 == asiento + 1 or alumno_conflictivo2 == asiento - 1:
+                return False
+
+            if alumno_conflictivo2 == asiento + 2 or alumno_conflictivo2 == asiento + 2:
+                return False
+
+            if alumno_conflictivo2 == asiento + 3 or alumno_conflictivo2 == asiento -3:
+                return False
+
 
 
 problem.addConstraint(not_encima, ('alumno_1', 'alumno_2'))
