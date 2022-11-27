@@ -1,5 +1,5 @@
 from constraint import *
-
+from itertools import combinations
 problem = Problem()
 
 
@@ -22,6 +22,11 @@ problem.addVariable('alumno_conflictivo4', domain_ciclo2)
 problem.addVariable('alumno_conflictivo5', domain_ciclo2)
 problem.addVariable('alumno_ciclo1', domain_ciclo1 )
 problem.addVariable('alumno_ciclo2', domain_ciclo1)
+
+lista_alumnos = ['alumno_1', 'alumno_2','alumno_3','alumno_conflictivo4','alumno_conflictivo5','alumno_ciclo1','alumno_ciclo2']
+lista_alumnos_red = ['alumno_1']
+lista_alumnos_con = ['alumno_2','alumno_conflictivo4', 'alumno_conflictivo5' ]
+
 # Primera restricción: Todos los alumnos tienen que tener asignado un asiento
 
 def todosAlumnosConAsiento(*args: list) -> bool:
@@ -54,29 +59,10 @@ def not_encima(alumno_1: int, alumno_2: int) -> bool:
     if alumno_1 != alumno_2:
         return True
 
-problem.addConstraint(not_encima, ('alumno_1', 'alumno_2'))
-problem.addConstraint(not_encima, ('alumno_1', 'alumno_3'))
-problem.addConstraint(not_encima, ('alumno_1', 'alumno_conflictivo4'))
-problem.addConstraint(not_encima, ('alumno_1', 'alumno_conflictivo5'))
-problem.addConstraint(not_encima, ('alumno_1', 'alumno_ciclo1'))
-problem.addConstraint(not_encima, ('alumno_1', 'alumno_ciclo2'))
-problem.addConstraint(not_encima, ('alumno_2', 'alumno_3'))
-problem.addConstraint(not_encima, ('alumno_2', 'alumno_conflictivo4'))
-problem.addConstraint(not_encima, ('alumno_2', 'alumno_conflictivo5'))
-problem.addConstraint(not_encima, ('alumno_2', 'alumno_ciclo1'))
-problem.addConstraint(not_encima, ('alumno_2', 'alumno_ciclo2'))
-problem.addConstraint(not_encima, ('alumno_3', 'alumno_conflictivo4'))
-problem.addConstraint(not_encima, ('alumno_3', 'alumno_conflictivo5'))
-problem.addConstraint(not_encima, ('alumno_3', 'alumno_ciclo1'))
-problem.addConstraint(not_encima, ('alumno_3', 'alumno_ciclo2'))
-problem.addConstraint(not_encima, ('alumno_conflictivo4', 'alumno_conflictivo5'))
-problem.addConstraint(not_encima, ('alumno_conflictivo4', 'alumno_ciclo1'))
-problem.addConstraint(not_encima, ('alumno_conflictivo4', 'alumno_ciclo2'))
-problem.addConstraint(not_encima, ('alumno_conflictivo5', 'alumno_ciclo1'))
-problem.addConstraint(not_encima, ('alumno_conflictivo5', 'alumno_ciclo2'))
-problem.addConstraint(not_encima, ('alumno_ciclo1', 'alumno_ciclo2'))
-problem.addConstraint(not_encima, ('alumno_ciclo1', 'alumno_ciclo2'))
-problem.addConstraint(not_encima, ('alumno_ciclo1', 'alumno_ciclo2'))
+
+for alumno in combinations(lista_alumnos, 2):
+    problem.addConstraint(not_encima, (alumno[0], alumno[1]))
+
 
 # Cuarta restricción: Si un asiento para una persona de movilidad reducida no está asignado, cualquier otro alumno
 # se puede sentar en ese asiento: viene implícito en la forma en la que se ha modelado el problema
@@ -175,6 +161,9 @@ def comprobar_asientos_adyacentes(alumno_conflictivo1: int, alumno_conflictivo2:
                             return False
 
     return True
+
+#for x in combinations(lista_alumnos_red + lista_alumnos_con, 2):
+    #problem.addConstraint(comprobar_asientos_adyacentes, (x[0], x[1]))
 
 problem.addConstraint(comprobar_asientos_adyacentes, ('alumno_conflictivo4', 'alumno_conflictivo5'))
 problem.addConstraint(comprobar_asientos_adyacentes, ('alumno_conflictivo4', 'alumno_1'))
