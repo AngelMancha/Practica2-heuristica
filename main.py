@@ -7,6 +7,8 @@ problem = Problem()
 #1 movilidad reducida
 #2 conflictivo
 #3 normie (que no salga de aquí guarrona)
+#4 conflictivo
+#5 con
 
 domain =[1,2,3]
 problem.addVariable('alumno_1', [1, 2])
