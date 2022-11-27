@@ -46,7 +46,8 @@ problem.addConstraint(no_al_lado, ('alumno_1', 'alumno_2'))
 problem.addConstraint(no_al_lado, ('alumno_1', 'alumno_3'))
 problem.addConstraint(no_al_lado, ('alumno_1', 'alumno_conflictivo4'))
 problem.addConstraint(no_al_lado, ('alumno_1', 'alumno_conflictivo5'))
-
+problem.addConstraint(no_al_lado, ('alumno_1', 'alumno_ciclo1'))
+problem.addConstraint(no_al_lado, ('alumno_1', 'alumno_ciclo2'))
 
 # Tercera restricción: impide que un mismo asiento se le asigne a 2 alumnos
 def not_encima(alumno_1: int, alumno_2: int) -> bool:
@@ -134,10 +135,6 @@ def comprobar_asientos_adyacentes(alumno_conflictivo1: int, alumno_conflictivo2:
                                     alumno_conflictivo2 == alumno_conflictivo1 + 3 or \
                                     alumno_conflictivo2 == alumno_conflictivo1 + 4:
                                 return False
-
-
-
-
 
             if alumno_conflictivo1 % 2 != 0:
                 if asiento in primera_fila:
