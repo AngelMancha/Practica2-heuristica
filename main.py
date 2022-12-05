@@ -21,11 +21,15 @@ problem.addVariable('alumno_3', domain_ciclo1)
 problem.addVariable('alumno_conflictivo4', domain_ciclo2)
 problem.addVariable('alumno_conflictivo5', domain_ciclo2)
 problem.addVariable('alumno_ciclo1', domain_ciclo1 )
-problem.addVariable('alumno_ciclo2', domain_ciclo1)
+problem.addVariable('alumno_ciclo2', domain_ciclo2)
 
 lista_alumnos = ['alumno_1', 'alumno_2','alumno_3','alumno_conflictivo4','alumno_conflictivo5','alumno_ciclo1','alumno_ciclo2']
 lista_alumnos_red = ['alumno_1']
-lista_alumnos_con = ['alumno_2','alumno_conflictivo4', 'alumno_conflictivo5' ]
+lista_alumnos_con = ['alumno_conflictivo4', 'alumno_conflictivo5' ]
+lista_alumnos_ciclo1 = ['alumno_ciclo1', 'alumno_1', 'alumno_2','alumno_conflictivo4','alumno_conflictivo5','alumno_ciclo1']
+lista_alumnos_ciclo2 =['alumno_ciclo_2', 'alumno_3']
+
+lista_alumnos_hermanos = ['alumno_2', 'alumno_3']
 
 # Primera restricción: Todos los alumnos tienen que tener asignado un asiento
 
@@ -53,6 +57,7 @@ problem.addConstraint(no_al_lado, ('alumno_1', 'alumno_conflictivo4'))
 problem.addConstraint(no_al_lado, ('alumno_1', 'alumno_conflictivo5'))
 problem.addConstraint(no_al_lado, ('alumno_1', 'alumno_ciclo1'))
 problem.addConstraint(no_al_lado, ('alumno_1', 'alumno_ciclo2'))
+
 
 # Tercera restricción: impide que un mismo asiento se le asigne a 2 alumnos
 def not_encima(alumno_1: int, alumno_2: int) -> bool:
@@ -122,6 +127,7 @@ def comprobar_asientos_adyacentes(alumno_conflictivo1: int, alumno_conflictivo2:
                                     alumno_conflictivo2 == alumno_conflictivo1 + 4:
                                 return False
 
+            #ASIENTOS IMPARES
             if alumno_conflictivo1 % 2 != 0:
                 if asiento in primera_fila:
                     # comprobamos el caso que el asiento sea 1
@@ -168,11 +174,66 @@ def comprobar_asientos_adyacentes(alumno_conflictivo1: int, alumno_conflictivo2:
 problem.addConstraint(comprobar_asientos_adyacentes, ('alumno_conflictivo4', 'alumno_conflictivo5'))
 problem.addConstraint(comprobar_asientos_adyacentes, ('alumno_conflictivo4', 'alumno_1'))
 problem.addConstraint(comprobar_asientos_adyacentes, ('alumno_conflictivo5', 'alumno_1'))
-problem.addConstraint(comprobar_asientos_adyacentes, ('alumno_2', 'alumno_1'))
-problem.addConstraint(comprobar_asientos_adyacentes, ('alumno_2', 'alumno_conflictivo4'))
-problem.addConstraint(comprobar_asientos_adyacentes, ('alumno_2', 'alumno_conflictivo5'))
+#problem.addConstraint(comprobar_asientos_adyacentes, ('alumno_2', 'alumno_1'))
+#problem.addConstraint(comprobar_asientos_adyacentes, ('alumno_2', 'alumno_conflictivo4'))
+#problem.addConstraint(comprobar_asientos_adyacentes, ('alumno_2', 'alumno_conflictivo5'))
+#problem.addConstraint(comprobar_asientos_adyacentes, ())
 
-# Sexta restricción: alumnos de 1er ciclo alante, los tontitos viejos atras
+#restriccion hermanos
+
+def hermanos(hermano1: int, hermano2: int) -> bool:
+    #si los hermanos pertenecen al mismo ciclo
+    if ((hermano1 in domain_ciclo1) and (hermano2 in domain_ciclo1)) or ((hermano1 in domain_ciclo2) and (hermano2 in domain_ciclo2)):
+        # si el hermano 1 está sentado en un asiento par
+        if (hermano1 % 2 == 0) and (hermano2 == hermano1 - 1):
+            return True
+        #si el hermano 1 está sentado en un asiento impar
+        if (hermano1 % 2 != 0) and (hermano2 == hermano1+ 1):
+            return True
+
+
+    # si los hermanos pertenecen a diferente ciclo
+    else:
+        #si es el hermano1 el que va al ciclo 1
+        if hermano1 in domain_ciclo1:
+            #si hermano1 está sentado en la ventana de abajo el hermano2 tiene que ir en pasillo
+            if ((hermano1 % 4) == 0) and ((hermano2) == hermano1-1):
+                return True
+            #si hermano1 está sentado en la ventana de abajo el hermano2 tiene que ir en pasillo
+            if (((hermano1-1) % 4) == 0) and ((hermano2) == hermano1+1):
+                return True
+
+        #si es el hermano2 el que va al ciclo 1
+        if hermano2 in domain_ciclo1:
+            #si hermano2 está sentado en la ventana de abajo el hermano1 tiene que ir en pasillo
+            if ((hermano2 % 4) == 0) and ((hermano1) == hermano2-1):
+                return True
+            #si hermano1 está sentado en la ventana de abajo el hermano1 tiene que ir en pasillo
+            if (((hermano2-1) % 4) == 0) and ((hermano1) == hermano2+1):
+                return True
+
+        #si el hermano1 tiene movilidad reducida
+        if hermano1 in dominio_reducido:
+            if hermano1 in domain_ciclo1 and hermano2 in domain_ciclo1:
+                return True
+            if hermano1 in domain_ciclo2 and hermano2 in domain_ciclo2:
+                return True
+
+        #si el hermano2 tiene movilidad reducidada
+        if hermano2 in dominio_reducido:
+            if hermano1 in domain_ciclo1 and hermano2 in domain_ciclo1:
+                return True
+            if hermano1 in domain_ciclo2 and hermano2 in domain_ciclo2:
+                return True
+
+
+
+problem.addConstraint(hermanos, ('alumno_2', 'alumno_3'))
+
+
+
+
+
 
 
 print(problem.getSolutions())
