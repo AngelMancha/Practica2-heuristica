@@ -157,22 +157,27 @@ for alumno_conflictivo in dict_alumnos.keys():
 def hermanos(hermano1: int, hermano2: int) -> bool:
     f_c1 = get_asiento(hermano1)
     f_h1, c_h1 = f_c1[0], f_c1[1]
-
     f_c2 = get_asiento(hermano2)
     f_h2, c_h2 = f_c2[0], f_c2[1]
 
-    if dict_alumnos.get(hermano1) == dom_c1 and dict_alumnos.get(hermano2) == dom_c2:
-        if autobus[f_h2][c_h2-1] == -1 or autobus[f_h2][c_h2+1] == -1:
+    print(dict_alumnos.get(hermano1), "HOLAAAAAAA")
+    ciclo_hermano1 = get_ciclo(dict_alumnos.get(hermano1))
+    ciclo_hermano2 = get_ciclo(dict_alumnos.get(hermano2))
+    if ciclo_hermano1 == 1 and ciclo_hermano2 == 2:
+
+        if autobus[f_h2][c_h2 - 1] == -1 or autobus[f_h2][c_h2 + 1] == -1:
             if (hermano2 % 2 == 0) and (hermano1 == hermano2 - 1):
                 print("\n\nEl hermano2 es el grande y su asiento es", hermano2)
                 print("El hermano1 es el pequeño y su asiento es", hermano1)
                 return True
+
+
             if (hermano2 % 2 != 0) and (hermano1 == hermano2 + 1):
                 print("\n\nEl hermano2 es el grande y su asiento es", hermano2)
                 print("El hermano1 es el pequeño y su asiento es", hermano1)
                 return True
 
-    if dict_alumnos.get(hermano1) == dom_c2 and dict_alumnos.get(hermano2) == dom_c1:
+    if ciclo_hermano1 == 2 and ciclo_hermano2 == 1:
         if autobus[f_h1][c_h1-1] == -1 or autobus[f_h1][c_h1+1] == -1:
             if (hermano1 % 2 == 0) and (hermano2 == hermano1 - 1):
                 print("\n\nEl hermano1 es el grande y su asiento es", hermano1)
@@ -193,11 +198,21 @@ def hermanos(hermano1: int, hermano2: int) -> bool:
 
 def get_asiento(alumno: int) -> tuple:
     count_fila = 0
-    count_col = 0
     for fila in autobus_num:
+        count_col = 0
         for asiento in fila:
             if alumno == asiento:
                 return count_fila, count_col
+            count_col +=1
+        count_fila +=1
+
+
+def get_ciclo(alumno)-> int:
+    print("GET CICLO")
+    for al in alumnos:
+        if al[0] == alumno[0]:
+            return al[1]
+
 
 def al_lado(alumno1, alumno2):
     if (alumno1 % 2 == 0) and (alumno2 == alumno1 - 1):
@@ -205,8 +220,41 @@ def al_lado(alumno1, alumno2):
     if (alumno1 % 2 != 0) and (alumno2 == alumno1 + 1):
         return True
 
+def hermanos_ciclo1_ciclo2(hermano_c1: int, hermano_c2: int) -> bool:
+    f_c1 = get_asiento(hermano_c1)
+    f_h1, c_h1 = f_c1[0], f_c1[1]
+    f_c2 = get_asiento(hermano_c2)
+    f_h2, c_h2 = f_c2[0], f_c2[1]
+    if autobus[f_h2][c_h2 - 1] == -1 or autobus[f_h2][c_h2 + 1] == -1:
+        if (hermano_c2 % 2 == 0) and (hermano_c1 == hermano_c2 - 1):
+            print("\n\nEl hermano2 es el grande y su asiento es", hermano2)
+            print("El hermano1 es el pequeño y su asiento es", hermano1)
+            return True
+        if (hermano2 % 2 != 0) and (hermano1 == hermano2 + 1):
+            print("\n\nEl hermano2 es el grande y su asiento es", hermano2)
+            print("El hermano1 es el pequeño y su asiento es", hermano1)
+            return True
 
-problem.addConstraint(hermanos, ('4XX', '3XX'))
+
+hermano1= '4XX'
+hermano2= '3XX'
+ciclo_hermano1 = get_ciclo(hermano1)
+ciclo_hermano2 = get_ciclo(hermano2)
+print("HOLAAAAAA")
+print("GET CICLO", get_ciclo(hermano1))
+print("EL CICLO DEL HERMANO1 ES", ciclo_hermano1)
+print("EL CICLO DEL HERMANO2 ES", ciclo_hermano2)
+
+if ciclo_hermano1 == ciclo_hermano2:
+    problem.addConstraint(al_lado, (hermano1, hermano2))
+if ciclo_hermano1 != ciclo_hermano2:
+    print("HERMANOS DE DIFERENTE CICLO")
+    if ciclo_hermano1 == 1:
+        problem.addConstraint(hermanos_ciclo1_ciclo2, (hermano1, hermano2))
+    else:
+        problem.addConstraint(hermanos_ciclo1_ciclo2, (hermano2, hermano1))
+
+
 
 num_sol = len(problem.getSolutions())
 
