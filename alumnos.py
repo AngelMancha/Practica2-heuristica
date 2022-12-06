@@ -5,10 +5,10 @@ problem = Problem()
 
 alumnos = [[1, 1, 'X', 'X', 0],
            [2, 1, 'X', 'X', 0],
-           [3, 1, 'X', 'X', 4],
-           [4, 2, 'X', 'X', 3],
+           [3, 1, 'X', 'C', 4],
+           [4, 2, 'R', 'X', 3],
            [5, 2, 'X', 'X', 0],
-           [6, 2, 'X', 'X', 0]]
+           [6, 2, 'X', 'C', 0]]
 
 
 autobus = [[1, 2, -1, 3, 4],
@@ -17,11 +17,11 @@ autobus = [[1, 2, -1, 3, 4],
            [9, 10, -1, 11, 12],
            [13, 14, -1, 15, 16]]
 
-dom_red_c1, dom_red_c2, dom_c1, dom_c2, asientos, autobus_num, dom_hermanos = [], [], [], [], [], [], []
+dom_red_c1, dom_red_c2, dom_c1, dom_c2, asientos, autobus_num = [], [], [], [], [], []
 dict_alumnos = {}
 
 def reducir_bus(autobus):
-    global dom_red_c1, dom_c1, dom_c2, asientos, dom_red_c2, dom_hermanos
+    global dom_red_c1, dom_c1, dom_c2, asientos, dom_red_c2
     counter = 0
     dom_red_c1 = autobus[0]
     for fila in autobus:
@@ -39,57 +39,55 @@ def reducir_bus(autobus):
         fila.remove(-1)
         dom_c2 = fila + dom_c2
         autobus_num.append(fila)
-
-
     dom_c1.sort()
     dom_c2.sort()
     dom_red_c1.sort()
     #dom_red_c1.remove(-1)
     asientos = dom_c1 + dom_c2
-    dom_hermanos = asientos
+
 
 reducir_bus(autobus)
 
+def get_caracteristicas(index):
+    return alumnos[index][0], alumnos[index][1], alumnos[index][2], alumnos[index][3], alumnos[index][4]
 
-#Crear diccionario de alumnos que asigna domino a los alumnos
-def assign_dom(alumnos):
+def assign_domain(alumnos):
     for i in range(0, len(alumnos)):
-        id = str(alumnos[i][0]) + str(alumnos[i][2]) + str(alumnos[i][3])
-        ciclo = alumnos[i][1]
-        movilidad = alumnos[i][3]
-        hermano = alumnos[i][4]
-        if ciclo == 1 and movilidad != 'R' and hermano == 0: #alumno ciclo 1 no reducidol
-            dict_alumnos[id] = dom_c1
-            problem.addVariable(id, dom_c1)
-        if ciclo == 1 and movilidad == 'R'and hermano == 0: #alumno ciclo 1 reducidol
-            dict_alumnos[id] = dom_red_c1
-            problem.addVariable(id, dom_red_c1)
-        if ciclo == 2 and movilidad != 'R'and hermano == 0: #alumnos ciclo 2 no reducido
-            dict_alumnos[id] = dom_c2
-            problem.addVariable(id, dom_c2)
-        if ciclo == 2 and movilidad == 'R'and hermano == 0: #alumno ciclo 2 reducidol
-            dict_alumnos[id] = dom_red_c1
-            problem.addVariable(id, dom_red_c1)
+        id, ciclo, movilidad, conflictivo, hermano = get_caracteristicas(i)
+        id_alumno = str(id) + str(movilidad) + str(conflictivo)
+        if id not in dict_alumnos.keys():
+            if hermano == 0 and ciclo == 1:
+                asignar_dom_c1(id_alumno)
+            if hermano == 0 and ciclo == 2:
+                asignar_dom_c2(id_alumno)
+            if hermano != 0:
+                asignar_dom_hermanos(id_alumno, hermano-1, ciclo)
+        problem.addVariable(id_alumno, dict_alumnos[id_alumno])
 
-        if hermano != 0:
-            for j in range(0, len(alumnos)):
-                id_hermano = alumnos[j][0]
-                id_her = str(alumnos[j][0]) + str(alumnos[j][2]) + str(alumnos[j][3])
-                ciclo_her = alumnos[j][1]
-                movilidad_her = alumnos[j][3]
-                hermano_her = alumnos[j][4]
-                if hermano == id_hermano:
+def asignar_dom_c2(id_alumno):
+    if 'R' in id_alumno:
+        dict_alumnos[id_alumno] = dom_red_c2
+    else:
+        dict_alumnos[id_alumno] = dom_c2
 
-                    if ciclo != ciclo_her and movilidad != 'R' and movilidad_her != 'R':
-                        if id not in dict_alumnos.keys() and id_her not in dict_alumnos.keys():
-                            dict_alumnos[id] = dom_c1
-                            problem.addVariable(id, dom_c1)
-                            dict_alumnos[id_her] = dom_c1
-                            problem.addVariable(id_her, dom_c1)
+def asignar_dom_c1(id_alumno):
+    if 'R' in id_alumno:
+        dict_alumnos[id_alumno] = dom_red_c1
+    else:
+        dict_alumnos[id_alumno] = dom_c1
 
-assign_dom(alumnos)
+def asignar_dom_hermanos(id_alumno, hermano, ciclo):
+    id_hermano, ciclo_hermano, movilidad_hermano, conflictivo_hermano = alumnos[hermano][0], alumnos[hermano][1], alumnos[hermano][2], alumnos[hermano][3]
+    id_h = str(id_hermano) + str(movilidad_hermano) + str(conflictivo_hermano)
+    if ('R' in id_h and ciclo_hermano == 2) or ('R' in id_alumno and ciclo == 2):
+        asignar_dom_c2(id_alumno)
+        asignar_dom_c2(id_h)
+    else:
+        asignar_dom_c1(id_alumno)
+        asignar_dom_c1(id_h)
 
-print(dict_alumnos)
+assign_domain(alumnos)
+
 # Primera restricción: Todos los alumnos tienen que tener asignado un asiento
 def todosAlumnosConAsiento(*args: list) -> bool:
     #return all(alumno in list(args) for alumno in [1, 2, 3])
@@ -146,54 +144,31 @@ def comprobar_asientos_adyacentes(alumno_conflictivo: int, alumno: int) -> bool:
     return True
 
 
+def comprobar_hermanos(alumno_1: str, alumno_2: str):
+    cond1, cond2 = False, False
+    for al in alumnos:
+        if al[0] == int(alumno_1[0]):
+            if al[4] == int(alumno_2[0]):  # el alumno1 es hermano del alumno2
+                cond1 = True
+
+    for al in alumnos:
+        if al[0] == int(alumno_2[0]):
+            if al[4] == int(alumno_1[0]):  # el alumno2 es hermano del alumno1
+                cond2 = True
+
+    if cond1 and cond2:
+        return True
+
+
+
+
 for alumno_conflictivo in dict_alumnos.keys():
     if 'C' in alumno_conflictivo:
         for alumno in dict_alumnos.keys():
-            if alumno != alumno_conflictivo and ('R' in alumno or 'C' in alumno):
-                problem.addConstraint(comprobar_asientos_adyacentes, (alumno_conflictivo, alumno))
-
-
-
-def hermanos(hermano1: int, hermano2: int) -> bool:
-    f_c1 = get_asiento(hermano1)
-    f_h1, c_h1 = f_c1[0], f_c1[1]
-    f_c2 = get_asiento(hermano2)
-    f_h2, c_h2 = f_c2[0], f_c2[1]
-
-    print(dict_alumnos.get(hermano1), "HOLAAAAAAA")
-    ciclo_hermano1 = get_ciclo(dict_alumnos.get(hermano1))
-    ciclo_hermano2 = get_ciclo(dict_alumnos.get(hermano2))
-    if ciclo_hermano1 == 1 and ciclo_hermano2 == 2:
-
-        if autobus[f_h2][c_h2 - 1] == -1 or autobus[f_h2][c_h2 + 1] == -1:
-            if (hermano2 % 2 == 0) and (hermano1 == hermano2 - 1):
-                print("\n\nEl hermano2 es el grande y su asiento es", hermano2)
-                print("El hermano1 es el pequeño y su asiento es", hermano1)
-                return True
-
-
-            if (hermano2 % 2 != 0) and (hermano1 == hermano2 + 1):
-                print("\n\nEl hermano2 es el grande y su asiento es", hermano2)
-                print("El hermano1 es el pequeño y su asiento es", hermano1)
-                return True
-
-    if ciclo_hermano1 == 2 and ciclo_hermano2 == 1:
-        if autobus[f_h1][c_h1-1] == -1 or autobus[f_h1][c_h1+1] == -1:
-            if (hermano1 % 2 == 0) and (hermano2 == hermano1 - 1):
-                print("\n\nEl hermano1 es el grande y su asiento es", hermano1)
-                print("El hermano2 es el pequeño y su asiento es", hermano2)
-                return True
-            if (hermano1 % 2 != 0) and (hermano2 == hermano1 + 1):
-                print("\n\nEl hermano1 es el grande y su asiento es", hermano1)
-                print("El hermano2 es el pequeño y su asiento es", hermano2)
-                return True
-    # si los hermanos pertenecen al mismo ciclo
-
-    if (hermano1 % 2 == 0) and (hermano2 == hermano1 - 1):
-        return True
-    if (hermano1 % 2 != 0) and (hermano2 == hermano1 + 1):
-        return True
-    return False
+            son_hermanos = comprobar_hermanos(alumno_conflictivo, alumno)
+            if not son_hermanos:
+                if alumno != alumno_conflictivo and ('R' in alumno or 'C' in alumno):
+                    problem.addConstraint(comprobar_asientos_adyacentes, (alumno_conflictivo, alumno))
 
 
 def get_asiento(alumno: int) -> tuple:
@@ -208,56 +183,64 @@ def get_asiento(alumno: int) -> tuple:
 
 
 def get_ciclo(alumno)-> int:
-    print("GET CICLO")
     for al in alumnos:
-        if al[0] == alumno[0]:
+        if al[0] == int(alumno[0]):
             return al[1]
 
+def get_movilidad(alumno)-> int:
+    if alumno[1] == 'R':
+        return True
 
 def al_lado(alumno1, alumno2):
     if (alumno1 % 2 == 0) and (alumno2 == alumno1 - 1):
+        print("h1:", alumno1, "h2", alumno2)
         return True
     if (alumno1 % 2 != 0) and (alumno2 == alumno1 + 1):
+        print("h1:", alumno1, "h2", alumno2)
         return True
 
 def hermanos_ciclo1_ciclo2(hermano_c1: int, hermano_c2: int) -> bool:
-    f_c1 = get_asiento(hermano_c1)
-    f_h1, c_h1 = f_c1[0], f_c1[1]
     f_c2 = get_asiento(hermano_c2)
     f_h2, c_h2 = f_c2[0], f_c2[1]
-    if autobus[f_h2][c_h2 - 1] == -1 or autobus[f_h2][c_h2 + 1] == -1:
+    if c_h2 == 1:
         if (hermano_c2 % 2 == 0) and (hermano_c1 == hermano_c2 - 1):
-            print("\n\nEl hermano2 es el grande y su asiento es", hermano2)
-            print("El hermano1 es el pequeño y su asiento es", hermano1)
             return True
-        if (hermano2 % 2 != 0) and (hermano1 == hermano2 + 1):
-            print("\n\nEl hermano2 es el grande y su asiento es", hermano2)
-            print("El hermano1 es el pequeño y su asiento es", hermano1)
+    if c_h2 == 2:
+        if (hermano_c2 % 2 != 0) and (hermano_c1 == hermano_c2 + 1):
             return True
 
 
-hermano1= '4XX'
-hermano2= '3XX'
-ciclo_hermano1 = get_ciclo(hermano1)
-ciclo_hermano2 = get_ciclo(hermano2)
-print("HOLAAAAAA")
-print("GET CICLO", get_ciclo(hermano1))
-print("EL CICLO DEL HERMANO1 ES", ciclo_hermano1)
-print("EL CICLO DEL HERMANO2 ES", ciclo_hermano2)
 
-if ciclo_hermano1 == ciclo_hermano2:
-    problem.addConstraint(al_lado, (hermano1, hermano2))
-if ciclo_hermano1 != ciclo_hermano2:
-    print("HERMANOS DE DIFERENTE CICLO")
-    if ciclo_hermano1 == 1:
-        problem.addConstraint(hermanos_ciclo1_ciclo2, (hermano1, hermano2))
-    else:
-        problem.addConstraint(hermanos_ciclo1_ciclo2, (hermano2, hermano1))
 
+
+for alumno in combinations(dict_alumnos.keys(), 2):
+    son_hermanos = False
+    son_hermanos = comprobar_hermanos(alumno[0], alumno[1])
+    if son_hermanos:
+
+        hermano1 = alumno[0]
+        hermano2 = alumno[1]
+        print("HERMANO1", hermano1)
+        print("HERMANO2", hermano2)
+        ciclo_hermano1 = get_ciclo(hermano1)
+        ciclo_hermano2 = get_ciclo(hermano2)
+        movilidad_hermano1 = get_movilidad(hermano1)
+        movilidad_hermano2 = get_movilidad(hermano2)
+
+        if not movilidad_hermano2 and not movilidad_hermano1:
+            if ciclo_hermano1 == ciclo_hermano2:
+                problem.addConstraint(al_lado, (hermano1, hermano2))
+            if ciclo_hermano1 != ciclo_hermano2:
+                if ciclo_hermano1 == 1:
+                    problem.addConstraint(hermanos_ciclo1_ciclo2, (hermano1, hermano2))
+                else:
+                    problem.addConstraint(hermanos_ciclo1_ciclo2, (hermano2, hermano1))
+
+        son_hermanos = False
 
 
 num_sol = len(problem.getSolutions())
 
-#print(problem.getSolutions())
+print(problem.getSolutions())
 print("El número de soluciones es", num_sol)
-#print(problem.getSolution())
+print(problem.getSolution())
