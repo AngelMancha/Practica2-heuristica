@@ -15,8 +15,7 @@ autobus = [[1, 2, -1, 3, 4],
            [5, 6, -1, 7, 8],
            [-1, -1, -1, -1, -1],
            [9, 10, -1, 11, 12],
-           [13, 14, -1, 15, 16]
-           ]
+           [13, 14, -1, 15, 16]]
 
 dom_red_c1, dom_red_c2, dom_c1, dom_c2, asientos, autobus_num, dom_hermanos = [], [], [], [], [], [], []
 dict_alumnos = {}
@@ -84,7 +83,9 @@ def assign_dom(alumnos):
                     if ciclo != ciclo_her and movilidad != 'R' and movilidad_her != 'R':
                         if id not in dict_alumnos.keys() and id_her not in dict_alumnos.keys():
                             dict_alumnos[id] = dom_c1
+                            problem.addVariable(id, dom_c1)
                             dict_alumnos[id_her] = dom_c1
+                            problem.addVariable(id_her, dom_c1)
 
 assign_dom(alumnos)
 
@@ -207,8 +208,8 @@ def al_lado(alumno1, alumno2):
 
 problem.addConstraint(hermanos, ('4XX', '3XX'))
 
-#num_sol = len(problem.getSolutions())
+num_sol = len(problem.getSolutions())
 
 #print(problem.getSolutions())
-#print("El número de soluciones es", num_sol)
+print("El número de soluciones es", num_sol)
 #print(problem.getSolution())
