@@ -3,12 +3,31 @@ from constraint import *
 from itertools import combinations
 problem = Problem()
 
-alumnos = [[1, 1, 'X', 'X', 0],
-           [2, 1, 'X', 'X', 0],
-           [3, 1, 'X', 'C', 4],
-           [4, 2, 'R', 'X', 3],
-           [5, 2, 'X', 'X', 0],
-           [6, 2, 'X', 'C', 0]]
+def rellenar_alumnos():
+    matrix=[]
+    f = open('CSP-tests/alumnos1.txt')
+    linea = f.readline()
+    while linea:
+        alumno = []
+        linea = f.readline()
+        for i in linea:
+            if i != ',' and i !='\n' and i !=' ':
+                if i != 'X' and i != 'C' and i != 'R':
+                    alumno.append(int(i))
+                else:
+                    alumno.append(i)
+
+        matrix.append(alumno)
+
+
+    f.close()
+
+    matrix.pop()
+    return matrix
+
+
+#Obtenemos los alumnos contenidos en el fichero input
+alumnos = rellenar_alumnos()
 
 
 autobus = [[1, 2, -1, 3, 4],
