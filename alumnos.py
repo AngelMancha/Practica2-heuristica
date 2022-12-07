@@ -17,6 +17,9 @@ autobus = [[1, 2, -1, 3, 4],
            [9, 10, -1, 11, 12],
            [13, 14, -1, 15, 16]]
 
+
+
+
 dom_red_c1, dom_red_c2, dom_c1, dom_c2, asientos, autobus_num = [], [], [], [], [], []
 dict_alumnos = {}
 
@@ -126,8 +129,8 @@ for alumno_conflictivo in dict_alumnos.keys():
 
 # Quinta restricción: No puede haber 2 alumnos conflictivos juntos en los asientos adyacentes
 def comprobar_asientos_adyacentes(alumno_conflictivo: int, alumno: int) -> bool:
-    count_fila = 0
-    count_col = 0
+    count_fila, count_col = 0, 0
+    fila_conflictivo, columna_conflictivo = 0, 0
     for fila in autobus_num:
         for asiento in fila:
             if alumno_conflictivo == asiento:
