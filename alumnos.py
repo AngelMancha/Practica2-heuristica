@@ -1,34 +1,34 @@
 ############ ESTO ES UNA PRUEBA DEL SEÑOR
 from constraint import *
 from itertools import combinations
+from random import randint
+import os
 problem = Problem()
 
 def rellenar_alumnos():
     matrix=[]
-    f = open('CSP-tests/alumnos1.txt')
+    f = open('CSP-tests/alumnos6.txt')
     linea = f.readline()
     while linea:
         alumno = []
         linea = f.readline()
-        for i in linea:
-            if i != ',' and i !='\n' and i !=' ':
-                if i != 'X' and i != 'C' and i != 'R':
-                    alumno.append(int(i))
-                else:
-                    alumno.append(i)
+        al = linea.split(sep=', ')
+        for i in al:
+            if i.isdigit():
+                alumno.append(int(i))
+            if not i.isdigit() and i != ',' and i != ' ':
+                if '\n' in i:
+                    i = int(i[0])
+                alumno.append(i)
 
         matrix.append(alumno)
-
-
     f.close()
-
     matrix.pop()
     return matrix
 
 
 #Obtenemos los alumnos contenidos en el fichero input
 alumnos = rellenar_alumnos()
-
 
 autobus = [[1, 2, -1, 3, 4],
            [5, 6, -1, 7, 8],
@@ -52,11 +52,13 @@ def reducir_bus(autobus):
             dom_c1 = fila + dom_c1
             autobus_num.append(fila)
         if fila == [-1, -1, -1, -1, -1]:
-            #dom_red_c1 += autobus[counter - 1]
+
+            dom_red_c1 += autobus[counter - 1]
             break
         counter = counter + 1
     dom_red_c2 = autobus[counter+1]
     for i in range(counter + 1, len(autobus)):
+
         fila = autobus[i]
         fila.remove(-1)
         dom_c2 = fila + dom_c2
@@ -85,6 +87,7 @@ def assign_domain(alumnos):
             if hermano != 0:
                 asignar_dom_hermanos(id_alumno, hermano-1, ciclo)
         problem.addVariable(id_alumno, dict_alumnos[id_alumno])
+
 
 def asignar_dom_c2(id_alumno):
     if 'R' in id_alumno:
@@ -177,18 +180,21 @@ def comprobar_hermanos(alumno_1: str, alumno_2: str):
         if al[0] == int(alumno_2[0]):
             if al[4] == int(alumno_1[0]):  # el alumno2 es hermano del alumno1
                 cond2 = True
-
     if cond1 and cond2:
         return True
 
-
+    else:
+        return False
 
 
 for alumno_conflictivo in dict_alumnos.keys():
     if 'C' in alumno_conflictivo:
         for alumno in dict_alumnos.keys():
+            #print('alumno1: ', alumno_conflictivo, ' alumno2: ', alumno)
             son_hermanos = comprobar_hermanos(alumno_conflictivo, alumno)
+            #print('¿Son hermanos?', son_hermanos)
             if not son_hermanos:
+                #print('no somos hermanos')
                 if alumno != alumno_conflictivo and ('R' in alumno or 'C' in alumno):
                     problem.addConstraint(comprobar_asientos_adyacentes, (alumno_conflictivo, alumno))
 
@@ -215,10 +221,10 @@ def get_movilidad(alumno)-> int:
 
 def al_lado(alumno1, alumno2):
     if (alumno1 % 2 == 0) and (alumno2 == alumno1 - 1):
-        print("h1:", alumno1, "h2", alumno2)
+
         return True
     if (alumno1 % 2 != 0) and (alumno2 == alumno1 + 1):
-        print("h1:", alumno1, "h2", alumno2)
+
         return True
 
 def hermanos_ciclo1_ciclo2(hermano_c1: int, hermano_c2: int) -> bool:
@@ -232,18 +238,12 @@ def hermanos_ciclo1_ciclo2(hermano_c1: int, hermano_c2: int) -> bool:
             return True
 
 
-
-
-
 for alumno in combinations(dict_alumnos.keys(), 2):
     son_hermanos = False
     son_hermanos = comprobar_hermanos(alumno[0], alumno[1])
     if son_hermanos:
-
         hermano1 = alumno[0]
         hermano2 = alumno[1]
-        print("HERMANO1", hermano1)
-        print("HERMANO2", hermano2)
         ciclo_hermano1 = get_ciclo(hermano1)
         ciclo_hermano2 = get_ciclo(hermano2)
         movilidad_hermano1 = get_movilidad(hermano1)
@@ -263,6 +263,24 @@ for alumno in combinations(dict_alumnos.keys(), 2):
 
 num_sol = len(problem.getSolutions())
 
-print(problem.getSolutions())
-print("El número de soluciones es", num_sol)
-print(problem.getSolution())
+solutions = problem.getSolutions()
+
+#print("El número de soluciones es", num_sol)
+sol1 = problem.getSolution()
+
+sorted_sol = dict(sorted(sol1.items(), key=lambda item:item[1]))
+
+
+file = open('CSP-tests-output/alumnos6.output.txt', 'w')
+file.write('Numero soluciones: ' + str(num_sol) + os.linesep)
+file.write('Una posible solucion es: ' + str(sorted_sol))
+counter = 0
+print('Generando soluciones...')
+random1 = randint(0, num_sol-1)
+random2 = randint(0, num_sol-1)
+random3 = randint(0, num_sol-1)
+random4 = randint(0, num_sol-1)
+
+file.write(os.linesep + str(solutions[random1]))
+file.write(os.linesep + str(solutions[random2]))
+file.write(os.linesep + str(solutions[random3]))
