@@ -5,6 +5,8 @@ from random import randint
 import os
 problem = Problem()
 
+
+
 def rellenar_alumnos():
     matrix=[]
     f = open('CSP-tests/alumnos6.txt')
@@ -32,9 +34,13 @@ alumnos = rellenar_alumnos()
 
 autobus = [[1, 2, -1, 3, 4],
            [5, 6, -1, 7, 8],
-           [-1, -1, -1, -1, -1],
            [9, 10, -1, 11, 12],
-           [13, 14, -1, 15, 16]]
+           [13, 14, -1, 15, 16],
+           [-1, -1, -1, -1, -1],
+           [17, 18, -1, 19, 20],
+           [21, 22, -1, 23, 24],
+           [25, 26, -1, 27, 28],
+           [29, 30, -1, 31, 32]]
 
 
 
