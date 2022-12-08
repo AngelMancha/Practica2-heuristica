@@ -1,0 +1,5 @@
+Numero soluciones: 3456
+Una posible solucion es: {'2RC': 2, '4RC': 4, '3RC': 14, '1RC': 16, '5XX': 32}
+{'1RC': 4, '2RC': 13, '3RC': 15, '4RC': 1, '5XX': 20}
+{'1RC': 3, '2RC': 16, '3RC': 14, '4RC': 1, '5XX': 23}
+{'1RC': 16, '2RC': 4, '3RC': 14, '4RC': 1, '5XX': 28}
