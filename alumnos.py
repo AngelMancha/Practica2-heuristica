@@ -1,15 +1,19 @@
-############ ESTO ES UNA PRUEBA DEL SEÑOR
+import os
+import sys
 from constraint import *
 from itertools import combinations
 from random import randint
-import os
+
+
+PATH: str = sys.argv[1]
+
+PATH_OUT: str = 'CSP-tests-output/' + PATH[10:18] + '.output.txt'
+
 problem = Problem()
-
-
 
 def rellenar_alumnos():
     matrix=[]
-    f = open('CSP-tests/alumnos6.txt')
+    f = open(PATH)
     linea = f.readline()
     while linea:
         alumno = []
@@ -41,7 +45,6 @@ autobus = [[1, 2, -1, 3, 4],
            [21, 22, -1, 23, 24],
            [25, 26, -1, 27, 28],
            [29, 30, -1, 31, 32]]
-
 
 
 
@@ -277,7 +280,7 @@ sol1 = problem.getSolution()
 sorted_sol = dict(sorted(sol1.items(), key=lambda item:item[1]))
 
 
-file = open('CSP-tests-output/alumnos6.output.txt', 'w')
+file = open(PATH_OUT, 'w')
 file.write('Numero soluciones: ' + str(num_sol) + os.linesep)
 file.write('Una posible solucion es: ' + str(sorted_sol))
 counter = 0
