@@ -1,0 +1,8 @@
+Número de soluciones: 3584
+{'3XX': 1, '2XC': 15, '1XC': 16, '4XX': 32}
+Otras posibles soluciones
+{'3XX': 3, '1XC': 11, '2XC': 12, '4XX': 26}
+{'3XX': 4, '2XC': 11, '1XC': 12, '4XX': 24}
+{'3XX': 3, '1XC': 5, '2XC': 6, '4XX': 29}
+{'3XX': 1, '1XC': 3, '2XC': 4, '4XX': 27}
+{'1XC': 1, '2XC': 2, '3XX': 10, '4XX': 28}
