@@ -6,7 +6,12 @@ from itertools import combinations
 
 PATH: str = sys.argv[1]
 PATH_OUT: str = 'CSP-tests-output/' + PATH[10:18] + '.output.txt'
-alumnos = manipular_txt.rellenar_alumnos(PATH)  # matriz con los alumnos
+
+#Rellenamos la matriz de alumnos obtenida del fichero input
+alumnos = manipular_txt.rellenar_alumnos(PATH)
+
+#Creamos la matriz que representa los asientos del autobús. El pasillo y
+# y la separación entre ciclo 1 y ciclo 2 queda representado por -1
 AUTOBUS = [[1, 2, -1, 3, 4],
            [5, 6, -1, 7, 8],
            [9, 10, -1, 11, 12],
@@ -17,16 +22,18 @@ AUTOBUS = [[1, 2, -1, 3, 4],
            [25, 26, -1, 27, 28],
            [29, 30, -1, 31, 32]]
 
+#Inicializamos los dominios
 dom_red_c1, dom_red_c2, dom_c1, dom_c2, asientos, autobus_num = [], [], [], [], [], []
 dict_alumnos = {}
 
 problem = Problem()
 
+
+
 # Primero definimos funciones auxiliares que va a utilizar nuestro programa antes de comenzar con el problema
 
-
 def reducir_bus(autobus: list[list]) -> None:
-    """Esta función se encarga de asignar valor a los dominios a partir del bus"""
+    """Esta función se encarga de dar valor a los dominios a partir del bus"""
     global dom_red_c1, dom_c1, dom_c2, asientos, dom_red_c2
     counter = 0
     dom_red_c1 = autobus[0]
@@ -48,19 +55,31 @@ def reducir_bus(autobus: list[list]) -> None:
     dom_c1.sort()
     dom_c2.sort()
     dom_red_c1.sort()
+    dom_red_c2.sort()
     asientos = dom_c1 + dom_c2
 
 
-reducir_bus(AUTOBUS)
+#------------------- Funciones para asignar los dominios correspondientes a los alumnos -------------------
 
-
-def get_caracteristicas(index: int) -> tuple:
-    """Esta función devuelve una tuple con las características de los alumnos dado un índice"""
-    return alumnos[index][0], alumnos[index][1], alumnos[index][2], alumnos[index][3], alumnos[index][4]
+def assign_domain() -> None:
+    """Esta función se encarga de asignar dominios a cada alumno dadas unas características. Recibe como argumento
+    una matriz 'alumnos' y va añadiendo cada alumno con su respectivo dominio al diccionario dict_alumnos.
+    Una vez hecho esto añade las variables al problema"""
+    for i in range(0, len(alumnos)):
+        id_alumno, ciclo, conflictivo, movilidad,  hermano = get_caracteristicas(i)
+        id_alumno = str(id_alumno) + str(movilidad) + str(conflictivo)
+        if id_alumno not in dict_alumnos.keys():
+            if hermano == 0 and ciclo == 1:
+                asignar_dom_c1(id_alumno)
+            if hermano == 0 and ciclo == 2:
+                asignar_dom_c2(id_alumno)
+            if hermano != 0:
+                asignar_dom_hermanos(id_alumno, hermano-1, ciclo)
+        problem.addVariable(id_alumno, dict_alumnos[id_alumno])
 
 
 def asignar_dom_c2(id_alumno: str) -> None:
-    """Esta función asigna el dominio de ciclo 2 al alumno"""
+    """Esta función asigna el dominio de ciclo 2 a los alumnos correspondientes"""
     if 'R' in id_alumno:
         dict_alumnos[id_alumno] = dom_red_c2
     else:
@@ -68,7 +87,7 @@ def asignar_dom_c2(id_alumno: str) -> None:
 
 
 def asignar_dom_c1(id_alumno: str) -> None:
-    """Esta función asigna el dominio de ciclo 1 al alumno"""
+    """Esta función asigna el dominio de ciclo 1 a los alumnos correspondientes"""
     if 'R' in id_alumno:
         dict_alumnos[id_alumno] = dom_red_c1
     else:
@@ -76,7 +95,7 @@ def asignar_dom_c1(id_alumno: str) -> None:
 
 
 def asignar_dom_hermanos(id_alumno: str, hermano: int, ciclo: int) -> None:
-    """Esta función le asigna un dominio a un par de hermanos"""
+    """Esta función le asigna el dominio correspondiente a un par de hermanos"""
     id_hermano, ciclo_hermano, conflictivo_hermano, movilidad_hermano = alumnos[hermano][0], alumnos[hermano][1], \
         alumnos[hermano][2], alumnos[hermano][3]
     id_h = str(id_hermano) + str(movilidad_hermano) + str(conflictivo_hermano)
@@ -87,6 +106,9 @@ def asignar_dom_hermanos(id_alumno: str, hermano: int, ciclo: int) -> None:
         asignar_dom_c1(id_alumno)
         asignar_dom_c1(id_h)
 
+
+
+#------------------- Funciones para obtener información de los alumnos -------------------
 
 def get_asiento(asiento_alumno: int) -> tuple:
     """Esta función obtiene el asiento del alumno"""
@@ -113,6 +135,10 @@ def get_movilidad(datos_alumno) -> int:
         return True
     return False
 
+def get_caracteristicas(index: int) -> tuple:
+    """Esta función devuelve una tuple con las características de los alumnos dado un índice"""
+    return alumnos[index][0], alumnos[index][1], alumnos[index][2], alumnos[index][3], alumnos[index][4]
+
 
 def comprobar_hermanos(alumno_1: str, alumno_2: str) -> bool:
     """Esta función comprueba si un par de alumnos son hermanos. Si lo son devuelve True, en otro caso False"""
@@ -127,25 +153,10 @@ def comprobar_hermanos(alumno_1: str, alumno_2: str) -> bool:
     return False
 
 
-def assign_domain() -> None:
-    """Esta función se encarga de asignar dominios a cada alumno dadas unas características. Recibe como argumento
-    una matriz 'alumnos' y va añadiendo cada alumno con su respectivo dominio al diccionario dict_alumnos.
-    Una vez hecho esto añade las variables al problema"""
-    for i in range(0, len(alumnos)):
-        id_alumno, ciclo, conflictivo, movilidad,  hermano = get_caracteristicas(i)
-        id_alumno = str(id_alumno) + str(movilidad) + str(conflictivo)
-        if id_alumno not in dict_alumnos.keys():
-            if hermano == 0 and ciclo == 1:
-                asignar_dom_c1(id_alumno)
-            if hermano == 0 and ciclo == 2:
-                asignar_dom_c2(id_alumno)
-            if hermano != 0:
-                asignar_dom_hermanos(id_alumno, hermano-1, ciclo)
-        problem.addVariable(id_alumno, dict_alumnos[id_alumno])
 
 
-assign_domain()
 
+#------------------- Funciones que representan las restricciones del problema -------------------
 
 def todos_alumnos_con_asiento(*args: list) -> bool:
     """Esta función obliga a todos los alumnos a tener un asiento asignado"""
@@ -154,40 +165,18 @@ def todos_alumnos_con_asiento(*args: list) -> bool:
             return False
     return True
 
-
-# Primera restricción: Todos los alumnos tienen que tener asignado un asiento
-problem.addConstraint(todos_alumnos_con_asiento, dict_alumnos.keys())
-
-
 def not_encima(alumno_1: int, alumno_2: int) -> bool:
     """Esta función hace que 2 alumnos no tengan asignado el mismo asiento"""
     if alumno_1 != alumno_2:
         return True
 
-
-# Segunda restricción: impide que un mismo asiento se le asigne a 2 alumnos
-for alumno in combinations(dict_alumnos.keys(), 2):
-    problem.addConstraint(not_encima, (alumno[0], alumno[1]))
-
-
-# Tercera restricción: Los alumnos de mov reducida deben dejar el asiendo de al lado libre
 def no_al_lado(alumno_red: int, alumno_normie: int) -> bool:
+    """Esta función hace que al lado de un alumno reducido no se siente nadie"""
     if alumno_red % 2 == 0 and alumno_normie != alumno_red - 1:
         return True
     if alumno_red % 2 != 0 and alumno_normie != alumno_red + 1:
         return True
 
-
-for alumno_conflictivo in dict_alumnos.keys():
-    if 'R' in alumno_conflictivo:
-        for alumno in dict_alumnos.keys():
-            if alumno != alumno_conflictivo:
-                problem.addConstraint(no_al_lado, (alumno_conflictivo, alumno))
-
-
-# Cuarta restricción: Si un asiento para una persona de movilidad reducida no está asignado, cualquier otro alumno
-# se puede sentar en ese asiento: viene implícito en la forma en la que se ha modelado el problema
-# Quinta restricción: No puede haber 2 alumnos conflictivos juntos en los asientos adyacentes
 def comprobar_asientos_adyacentes(alumno_conf: int, alumno_normal: int) -> bool:
     """Esta función hace que un alumno conflictivo no se siente al lado de otro alumno conflictivo
     o un alumno con movilidad reducida en los asientos adyacentes"""
@@ -208,17 +197,9 @@ def comprobar_asientos_adyacentes(alumno_conf: int, alumno_normal: int) -> bool:
         return False
     return True
 
-
-for alumno_conflictivo in dict_alumnos.keys():
-    if 'C' in alumno_conflictivo:
-        for alumno in dict_alumnos.keys():
-            son_hermanos = comprobar_hermanos(alumno_conflictivo, alumno)
-            if not son_hermanos:
-                if alumno != alumno_conflictivo and ('R' in alumno or 'C' in alumno):
-                    problem.addConstraint(comprobar_asientos_adyacentes, (alumno_conflictivo, alumno))
-
-
 def al_lado(alumno1: int, alumno2: int) -> bool:
+    """Esta funcion hace que dos hermanos se sienten juntos siempre si ninguno
+    de los dos es de mov. reducida"""
     if (alumno1 % 2 == 0) and (alumno2 == alumno1 - 1):
         return True
     if (alumno1 % 2 != 0) and (alumno2 == alumno1 + 1):
@@ -227,6 +208,8 @@ def al_lado(alumno1: int, alumno2: int) -> bool:
 
 
 def hermanos_ciclo1_ciclo2(hermano_c1: int, hermano_c2: int) -> bool:
+    """Esta funcion asegura que cuando haya dos hermanos de diferentes ciclos,
+    el mayor siempres se siente en la parte más cercana al pasillo"""
     f_c2 = get_asiento(hermano_c2)
     f_h2, c_h2 = f_c2[0], f_c2[1]
     if c_h2 == 1:
@@ -238,21 +221,64 @@ def hermanos_ciclo1_ciclo2(hermano_c1: int, hermano_c2: int) -> bool:
     return False
 
 
-for alumno in combinations(dict_alumnos.keys(), 2):
-    son_hermanos = comprobar_hermanos(alumno[0], alumno[1])
-    if son_hermanos:
-        hermano1, hermano2 = alumno[0], alumno[1]
-        ciclo_hermano1, ciclo_hermano2 = get_ciclo(hermano1), get_ciclo(hermano2)
-        movilidad_hermano1, movilidad_hermano2 = get_movilidad(hermano1), get_movilidad(hermano2)
-        if not movilidad_hermano2 and not movilidad_hermano1:
-            if ciclo_hermano1 == ciclo_hermano2:
-                problem.addConstraint(al_lado, (hermano1, hermano2))
-            if ciclo_hermano1 != ciclo_hermano2:
-                if ciclo_hermano1 == 1:
-                    problem.addConstraint(hermanos_ciclo1_ciclo2, (hermano1, hermano2))
-                else:
-                    problem.addConstraint(hermanos_ciclo1_ciclo2, (hermano2, hermano1))
-        son_hermanos = False
 
 
+# ---------------------------------- FUNCIÓN QUE EJECUTA LA SOLUCIÓN LLAMANDO A TODAS LAS RESTRICCIONES DEL PROBLEMA --------------------------------
+
+def ejecutar_solucion():
+    # Primera restricción: Todos los alumnos tienen que tener asignado un asiento
+    problem.addConstraint(todos_alumnos_con_asiento, dict_alumnos.keys())
+
+    for alumno_conflictivo in dict_alumnos.keys():
+        # Segunda restricción: Los alumnos comflictivos no se pueden sentar cerca de ningún otro conflictivo ni reducido
+        if 'C' in alumno_conflictivo:
+            for alumno in dict_alumnos.keys():
+                son_hermanos = comprobar_hermanos(alumno_conflictivo, alumno)
+                if not son_hermanos:
+                    if alumno != alumno_conflictivo and ('R' in alumno or 'C' in alumno):
+                        problem.addConstraint(comprobar_asientos_adyacentes, (alumno_conflictivo, alumno))
+
+        # Tercera restricción: al lado de cada alumno con mov. reducida no se sienta nadie
+        if 'R' in alumno_conflictivo:
+            for alumno in dict_alumnos.keys():
+                if alumno != alumno_conflictivo:
+                    problem.addConstraint(no_al_lado, (alumno_conflictivo, alumno))
+
+    for alumno in combinations(dict_alumnos.keys(), 2):
+        # Cuarta restricción: impide que un mismo asiento se le asigne a 2 alumnos
+        problem.addConstraint(not_encima, (alumno[0], alumno[1]))
+
+        # Quinta restricción: Hermanos
+        son_hermanos = comprobar_hermanos(alumno[0], alumno[1])
+        if son_hermanos:
+            hermano1, hermano2 = alumno[0], alumno[1]
+            ciclo_hermano1, ciclo_hermano2 = get_ciclo(hermano1), get_ciclo(hermano2)
+            movilidad_hermano1, movilidad_hermano2 = get_movilidad(hermano1), get_movilidad(hermano2)
+            # Si ninguno de los dos es de movilidad reducida:
+            if not movilidad_hermano2 and not movilidad_hermano1:
+
+                # Si ambos pertenecen al mismo ciclo, se sentarán al lado
+                if ciclo_hermano1 == ciclo_hermano2:
+                    problem.addConstraint(al_lado, (hermano1, hermano2))
+
+                # Si pertenecen a ciclos diferentes, el mayor se sienta en ventana
+                if ciclo_hermano1 != ciclo_hermano2:
+                    if ciclo_hermano1 == 1:
+                        problem.addConstraint(hermanos_ciclo1_ciclo2, (hermano1, hermano2))
+                    else:
+                        problem.addConstraint(hermanos_ciclo1_ciclo2, (hermano2, hermano1))
+            son_hermanos = False
+
+
+
+
+reducir_bus(AUTOBUS)
+
+#Ejecutamos función que asigna los dominos a las variables
+assign_domain()
+
+#Ejecutamos función que calcula la solución final
+ejecutar_solucion()
+
+#Guardamos en los ficheros output la solución obtenida
 manipular_txt.output(PATH_OUT, len(problem.getSolutions()), problem.getSolutions(), problem.getSolution())
