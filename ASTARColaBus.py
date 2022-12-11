@@ -45,9 +45,6 @@ class Node():
                 if ultimo_alumno[1] == 'R' and ultimo_alumno[2] == 'R':
                     g = 000
 
-
-
-
     def moverAlumno(self, alumno):
         if len(self.cola_inicial) == 0:
             return False
