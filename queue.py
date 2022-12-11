@@ -10,7 +10,8 @@ class Queue:
         return self.items == []
 
     def enqueue(self, item):
-        self.items.append(item)
+        print('QUEUE')
+        self.items.insert(0, item)
 
     def dequeue(self):
         return self.items.pop()
@@ -20,3 +21,5 @@ class Queue:
 
     def display(self):
         return self.items
+
+queue=Queue()
