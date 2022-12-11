@@ -20,12 +20,3 @@ class Queue:
 
     def display(self):
         return self.items
-
-
-queue = Queue()
-queue.enqueue(210)
-queue.enqueue(0)
-queue.enqueue(20)
-queue.enqueue(1212)
-result = queue.dequeue()
-print(result)
