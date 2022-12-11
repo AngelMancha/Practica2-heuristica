@@ -13,10 +13,10 @@ class Node():
 
 def children(current: Node) -> list:
         list_children = []
-        cola_inicial=current.cola_inicial
-        cola_final=current.cola_final
-        ultimo_alumno_cola_final = cola_final.pop()
-        for i in current.cola_inicial:
+        cola_inicial = current.cola_inicial
+        cola_final = current.cola_final
+        lista_final = []
+        for i in cola_inicial:
             newNode = Node()
             newNode.parent = current
             for j in cola_inicial:
