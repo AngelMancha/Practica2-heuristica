@@ -56,4 +56,3 @@ class Node():
     def moverAlumnoReducido(self, alumno):
         if len(self.cola_inicial) == 0:
             self.g=00
-
