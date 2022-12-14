@@ -1,8 +1,1 @@
-Número de soluciones: 3456
-{'2RC': 2, '4RC': 4, '3RC': 14, '1RC': 16, '5XX': 32}
-Otras posibles soluciones
-{'3RC': 1, '4RC': 4, '2RC': 13, '1RC': 15, '5XX': 25}
-{'3RC': 1, '2RC': 4, '4RC': 13, '1RC': 15, '5XX': 26}
-{'1RC': 1, '4RC': 3, '3RC': 13, '2RC': 16, '5XX': 25}
-{'4RC': 1, '1RC': 4, '3RC': 13, '2RC': 15, '5XX': 28}
-{'1RC': 1, '3RC': 3, '4RC': 13, '2RC': 16, '5XX': 17}
+Nï¿½mero de soluciones: 3456{'2RC': 2, '4RC': 4, '3RC': 14, '1RC': 16, '5XX': 32}Otras posibles soluciones{'3RC': 1, '4RC': 4, '2RC': 13, '1RC': 15, '5XX': 25}{'3RC': 1, '2RC': 4, '4RC': 13, '1RC': 15, '5XX': 26}{'1RC': 1, '4RC': 3, '3RC': 13, '2RC': 16, '5XX': 25}{'4RC': 1, '1RC': 4, '3RC': 13, '2RC': 15, '5XX': 28}{'1RC': 1, '3RC': 3, '4RC': 13, '2RC': 16, '5XX': 17}
