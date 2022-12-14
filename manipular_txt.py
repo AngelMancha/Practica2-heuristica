@@ -46,3 +46,26 @@ def output(path: str, num_sol: int, random_sol: list, solution: dict) -> None:
 def sort_dict(sol_dict: dict) -> dict:
     """Esta funcion ordena el diccionario por valor"""
     return dict(sorted(sol_dict.items(), key=lambda item: item[1]))
+
+
+
+def extract_cola_inicial_astar(path: str) -> list[list]:
+    f = open(path)
+    linea = f.readline()
+    alumno = ""
+    lista_ordenada = []
+    cola_inical = []
+    for character in linea:
+        if character == " ":
+            lista_ordenada.append(alumno)
+            alumno = ""
+            continue
+        if character != "{" and character != "}" and character != "'" and character != "," and character != ":":
+            alumno = alumno + character
+    f.close()
+
+    for item in lista_ordenada:
+        if 'C' in item or 'X' in item or 'R' in item:
+            cola_inical.append(item)
+
+    return cola_inical
