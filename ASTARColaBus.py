@@ -8,7 +8,6 @@ class Node():
         self.position = position
         self.g = 0
         self.h = 0
-        self.f = 0
 
 
 def children(current: Node) -> list:
@@ -29,10 +28,10 @@ def children(current: Node) -> list:
 
             newNode.cola_final.enqueue(i)
             newNode.g = moverAlumno(newNode.cola_final)
+            newNode.h = heuristics1(newNode.cola_final)
             list_children.append(newNode)
 
         return list_children
-
 
 
 
@@ -90,7 +89,7 @@ def moverAlumno(final_queue: Queue) -> int:
 def heuristics():
     pass
 
-def aStar(start, goal):
+def aStar(start, goal) -> list[Node]:
     # The open and closed sets
     openset = set()
     closedset = set()
@@ -100,21 +99,21 @@ def aStar(start, goal):
     openset.add(current)
     # While the open set is not empty
     while openset:
-        print('Open set not empty', openset)
         #Find the item in the open set with the lowest G + H score
-        current = min(openset, key=lambda o:o.g)  # luego sumar o.h
+        current = min(openset, key=lambda o:o.g + o.h)
+        print('cola finallll',current.cola_final.display())
         #print("CURRENT", current.cola_final)
-        print('Current node initial: ', current.cola_inicial)
-        print('Current node final queue: ', current.cola_final.display())
+       # print('Current node initial: ', current.cola_inicial)
+        #print('Current node final queue: ', current.cola_final.display())
         #If it is the item we want, retrace the path and return it
         if current.cola_inicial == goal.cola_inicial:
             path = []
             while current.parent:
                 path.append(current)
+                print('Cost current node g: ', current.g)
+                print('Cost current node h: ', current.h)
                 current = current.parent
-
             path.append(current)
-            print("COSTEEEE", current.g)
             return path[::-1]
         #Remove the item from the open set
         openset.remove(current)
@@ -135,15 +134,15 @@ def aStar(start, goal):
                     node.parent = current
             else:
                 #If it isn't in the open set, calculate the G and H score for the node
-                node.g = current.g
-                node.h = heuristics()
+                node.g = node.g
+                node.h = node.h
                 #Set the parent to our current item
                 node.parent = current
                 #Add it to the set
                 openset.add(node)
-            print('Closed set', closedset)
+
     #Throw an exception if there is no path
-    raise ValueError('No Path Found')
+    raise ValueError('No hay solución')
 
 
 initial_node=Node()
