@@ -51,6 +51,7 @@ def sort_dict(sol_dict: dict) -> dict:
 def extract_cola_inicial_astar(path: str) -> list[list]:
     f = open(path)
     linea = f.readline()
+    print(linea[63], "SLDFJLSDKJFLSD")
     alumno = ""
     lista_ordenada = []
     cola_inical = []
@@ -59,15 +60,21 @@ def extract_cola_inicial_astar(path: str) -> list[list]:
             lista_ordenada.append(alumno)
             alumno = ""
             continue
+
         if character != "{" and character != "}" and character != "'" and character != "," and character != ":":
             alumno = alumno + character
+
+    asiento_ultimo = linea[len(linea)-4] + linea[len(linea)-3]
+    lista_ordenada.append(asiento_ultimo)
+    print(asiento_ultimo, "ALOHA")
     f.close()
 
     for item in lista_ordenada:
         if 'C' in item or 'X' in item or 'R' in item:
             cola_inical.append(item)
 
-    return cola_inical
+
+    return lista_ordenada, cola_inical
 
 
 def output_astar(dict_alumno: str, path_out: str, cola_inicial: list, cola_final: list):
