@@ -1,4 +1,12 @@
+import manipular_txt
 from queue import Queue
+import sys
+
+
+#PATH = sys.argv[1]
+#numeroHeuristica=sys.argv[2]
+
+
 
 class Node():
     def __init__(self, parent=None, position=None):
@@ -198,18 +206,26 @@ def aStar(start, goal):
     raise ValueError('No Path Found')
 
 
+
+#Definimos los estados iniciales y finales
 initial_node=Node()
 final_node=Node()
+
 initial_node.cola_inicial = ['3XX', '5XR', '4CX']
-#initial_node.cola_inicial = ['3XX', '4CX', '5XR']
+#initial_node.cola_inicial = manipular_txt.extract_cola_inicial_astar('ASTAR-tests/alumnos1.prob')
+
 initial_node.cola_final = Queue()
 
 final_node.cola_inicial = []
 final_node.cola_final = Queue()
 
 
+value = aStar(initial_node, final_node)
+for i in value:
+    print(i.cola_final.display())
 
 
+"""
 queue =  Queue()
 queue.enqueue('5CX')
 queue.enqueue('3XR')
@@ -217,5 +233,5 @@ queue.enqueue('4XX')
 
 value=insertarAlumnoCola(queue)
 print("HOLAPUTAAAAAAAAAAAAAAAAAAAAA", value)
-
+"""
 
