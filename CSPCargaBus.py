@@ -7,11 +7,11 @@ from itertools import combinations
 PATH: str = sys.argv[1]
 PATH_OUT: str = 'CSP-tests-output/' + PATH[10:18] + '.output.txt'
 
-#Rellenamos la matriz de alumnos obtenida del fichero input
+#  Rellenamos la matriz de alumnos obtenida del fichero input
 alumnos = manipular_txt.rellenar_alumnos(PATH)
 
-#Creamos la matriz que representa los asientos del autobús. El pasillo y
-# y la separación entre ciclo 1 y ciclo 2 queda representado por -1
+#  Creamos la matriz que representa los asientos del autobús. El pasillo y
+#  y la separación entre ciclo 1 y ciclo 2 queda representado por -1
 AUTOBUS = [[1, 2, -1, 3, 4],
            [5, 6, -1, 7, 8],
            [9, 10, -1, 11, 12],
@@ -22,15 +22,15 @@ AUTOBUS = [[1, 2, -1, 3, 4],
            [25, 26, -1, 27, 28],
            [29, 30, -1, 31, 32]]
 
-#Inicializamos los dominios
+#  Inicializamos los dominios
 dom_red_c1, dom_red_c2, dom_c1, dom_c2, asientos, autobus_num = [], [], [], [], [], []
 dict_alumnos = {}
 
 problem = Problem()
 
 
-
-# Primero definimos funciones auxiliares que va a utilizar nuestro programa antes de comenzar con el problema
+#  Primero definimos funciones auxiliares que va a utilizar nuestro
+#  programa antes de comenzar con el problema
 
 def reducir_bus(autobus: list[list]) -> None:
     """Esta función se encarga de dar valor a los dominios a partir del bus"""
@@ -59,8 +59,7 @@ def reducir_bus(autobus: list[list]) -> None:
     asientos = dom_c1 + dom_c2
 
 
-#------------------- Funciones para asignar los dominios correspondientes a los alumnos -------------------
-
+#  ----  Funciones para asignar los dominios correspondientes a los alumnos ----
 def assign_domain() -> None:
     """Esta función se encarga de asignar dominios a cada alumno dadas unas características. Recibe como argumento
     una matriz 'alumnos' y va añadiendo cada alumno con su respectivo dominio al diccionario dict_alumnos.
@@ -107,8 +106,7 @@ def asignar_dom_hermanos(id_alumno: str, hermano: int, ciclo: int) -> None:
         asignar_dom_c1(id_h)
 
 
-
-#------------------- Funciones para obtener información de los alumnos -------------------
+#  ----  Funciones para obtener información de los alumnos ----
 
 def get_asiento(asiento_alumno: int) -> tuple:
     """Esta función obtiene el asiento del alumno"""
@@ -135,6 +133,7 @@ def get_movilidad(datos_alumno) -> int:
         return True
     return False
 
+
 def get_caracteristicas(index: int) -> tuple:
     """Esta función devuelve una tuple con las características de los alumnos dado un índice"""
     return alumnos[index][0], alumnos[index][1], alumnos[index][2], alumnos[index][3], alumnos[index][4]
@@ -153,10 +152,7 @@ def comprobar_hermanos(alumno_1: str, alumno_2: str) -> bool:
     return False
 
 
-
-
-
-#------------------- Funciones que representan las restricciones del problema -------------------
+# ---- Funciones que representan las restricciones del problema ----
 
 def todos_alumnos_con_asiento(*args: list) -> bool:
     """Esta función obliga a todos los alumnos a tener un asiento asignado"""
@@ -165,10 +161,12 @@ def todos_alumnos_con_asiento(*args: list) -> bool:
             return False
     return True
 
+
 def not_encima(alumno_1: int, alumno_2: int) -> bool:
     """Esta función hace que 2 alumnos no tengan asignado el mismo asiento"""
     if alumno_1 != alumno_2:
         return True
+
 
 def no_al_lado(alumno_red: int, alumno_normie: int) -> bool:
     """Esta función hace que al lado de un alumno reducido no se siente nadie"""
@@ -176,6 +174,7 @@ def no_al_lado(alumno_red: int, alumno_normie: int) -> bool:
         return True
     if alumno_red % 2 != 0 and alumno_normie != alumno_red + 1:
         return True
+
 
 def comprobar_asientos_adyacentes(alumno_conf: int, alumno_normal: int) -> bool:
     """Esta función hace que un alumno conflictivo no se siente al lado de otro alumno conflictivo
@@ -196,6 +195,7 @@ def comprobar_asientos_adyacentes(alumno_conf: int, alumno_normal: int) -> bool:
     if abs(fila_conflictivo-fila_otro) <= 1 and abs(columna_conflictivo-columna_otro) <= 1:
         return False
     return True
+
 
 def al_lado(alumno1: int, alumno2: int) -> bool:
     """Esta funcion hace que dos hermanos se sienten juntos siempre si ninguno
@@ -221,10 +221,7 @@ def hermanos_ciclo1_ciclo2(hermano_c1: int, hermano_c2: int) -> bool:
     return False
 
 
-
-
-# ---------------------------------- FUNCIÓN QUE EJECUTA LA SOLUCIÓN LLAMANDO A TODAS LAS RESTRICCIONES DEL PROBLEMA --------------------------------
-
+# ---- FUNCIÓN QUE EJECUTA LA SOLUCIÓN LLAMANDO A TODAS LAS RESTRICCIONES DEL PROBLEMA ----
 def ejecutar_solucion():
     # Primera restricción: Todos los alumnos tienen que tener asignado un asiento
     problem.addConstraint(todos_alumnos_con_asiento, dict_alumnos.keys())
@@ -270,15 +267,13 @@ def ejecutar_solucion():
             son_hermanos = False
 
 
-
-
 reducir_bus(AUTOBUS)
 
-#Ejecutamos función que asigna los dominos a las variables
+#  Ejecutamos función que asigna los dominos a las variables
 assign_domain()
 
-#Ejecutamos función que calcula la solución final
+#  Ejecutamos función que calcula la solución final
 ejecutar_solucion()
 
-#Guardamos en los ficheros output la solución obtenida
+#  Guardamos en los ficheros output la solución obtenida
 manipular_txt.output(PATH_OUT, len(problem.getSolutions()), problem.getSolutions(), problem.getSolution())

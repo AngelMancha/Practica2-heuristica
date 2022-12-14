@@ -48,7 +48,6 @@ def sort_dict(sol_dict: dict) -> dict:
     return dict(sorted(sol_dict.items(), key=lambda item: item[1]))
 
 
-
 def extract_cola_inicial_astar(path: str) -> list[list]:
     f = open(path)
     linea = f.readline()
