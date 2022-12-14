@@ -74,7 +74,6 @@ def assign_domain() -> None:
                 asignar_dom_c2(id_alumno)
             if hermano != 0:
                 asignar_dom_hermanos(id_alumno, hermano-1, ciclo)
-        print(dict_alumnos)
         problem.addVariable(id_alumno, dict_alumnos[id_alumno])
 
 
@@ -99,7 +98,6 @@ def asignar_dom_hermanos(id_alumno: str, hermano: int, ciclo: int) -> None:
     id_hermano, ciclo_hermano, conflictivo_hermano, movilidad_hermano = alumnos[hermano][0], alumnos[hermano][1], \
         alumnos[hermano][2], alumnos[hermano][3]
     id_h = str(id_hermano) + str(conflictivo_hermano) + str(movilidad_hermano)
-    print(id_h)
     if ('R' in id_h and ciclo_hermano == 2) or ('R' in id_alumno and ciclo == 2):
         asignar_dom_c2(id_alumno)
         asignar_dom_c2(id_h)
