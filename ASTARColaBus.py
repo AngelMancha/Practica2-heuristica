@@ -86,8 +86,37 @@ def moverAlumno(final_queue: Queue) -> int:
         alumno_anterior = alumno
     return g
 
-def heuristics():
-    pass
+def heuristics1(final_queue: Queue) -> int:
+    h: int = 0
+    i: int = 0
+    len_queue = final_queue.size()  # numero de alumnos en la cola inicialmente
+    while i < len_queue:
+        alumno = final_queue.dequeue()
+        if 'XX' in alumno:
+            h += 1
+        if 'XR' in alumno:
+            h += 2
+        if 'CX' in alumno:
+            h += 2
+        final_queue.enqueue(alumno)
+        i += 1
+    return h
+
+def heuristics2(final_queue: Queue) -> int:
+    h: int = 0
+    i: int = 0
+    len_queue = final_queue.size()  # numero de alumnos en la cola inicialmente
+    while i < len_queue:
+        alumno = final_queue.dequeue()
+        if 'XX' in alumno:
+            h += 1
+        if 'XR' in alumno:
+            h += 2
+        if 'CX' in alumno:
+            h += 2
+        final_queue.enqueue(alumno)
+        i += 1
+    return h
 
 def aStar(start, goal) -> list[Node]:
     # The open and closed sets
@@ -127,7 +156,7 @@ def aStar(start, goal) -> list[Node]:
             #Otherwise if it is already in the open set
             if node in openset:
                 #Check if we beat the G score
-                new_g = current.g
+                new_g = node.g
                 if node.g > new_g:
                     #If so, update the node to have a new parent
                     node.g = new_g
