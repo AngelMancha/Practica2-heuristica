@@ -5,7 +5,7 @@ import sys
 
 PATH = sys.argv[1]
 numeroHeuristica=sys.argv[2]
-
+PATH_OUT: str = 'ASTAR-tests-output/' + PATH[19:27] + '_' + str(numeroHeuristica) + '.output.prob'
 
 
 class Node():
@@ -209,14 +209,13 @@ def aStar(start, goal):
 
 
 
-#Definimos los estados iniciales y finales
-initial_node=Node()
-final_node=Node()
+#  Definimos los estados iniciales y finales
+
+initial_node = Node()
+final_node = Node()
 
 
-initial_node.cola_inicial = manipular_txt.extract_cola_inicial_astar('ASTAR-tests/alumnos1.prob')
-
-
+initial_node.cola_inicial = manipular_txt.extract_cola_inicial_astar('ASTAR-tests/alumnos1.prob')[0]
 
 initial_node.cola_final = Queue()
 
@@ -226,16 +225,11 @@ final_node.cola_final = Queue()
 
 value = aStar(initial_node, final_node)
 for i in value:
-    print(i.cola_final.display())
+    final_sol_aux = i.cola_final.display()
+print(final_sol_aux)
+sol = []
+for i in range(0, len(final_sol_aux)):
+    sol.append(final_sol_aux.pop())
 
-
-"""
-queue =  Queue()
-queue.enqueue('5CX')
-queue.enqueue('3XR')
-queue.enqueue('4XX')
-
-value=insertarAlumnoCola(queue)
-print("HOLAPUTAAAAAAAAAAAAAAAAAAAAA", value)
-"""
+print(sol)
 

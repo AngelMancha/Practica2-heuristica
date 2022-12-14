@@ -68,3 +68,28 @@ def extract_cola_inicial_astar(path: str) -> list[list]:
             cola_inical.append(item)
 
     return cola_inical
+
+
+def output_astar(dict_alumno: str, path_out: str, cola_inicial: list, cola_final: list):
+    """Esta función genera 2 ficheros: 'alumnosXH.output.prob  y 'alumnosXH.stat', donde X es el número
+    del test y H es la heurística que utiliza."""
+    value = extract_cola_inicial_astar('ASTAR-tests/alumnos1.prob')
+    lista_inicial_asientos = value[0]
+    dict_final= {}
+    f = open(dict_alumno)
+    linea = f.readline()
+    len_cola = len(cola_final)
+    counter = 0
+    for alumno in cola_final:
+        for item in lista_inicial_asientos:
+            if item == alumno and counter < len_cola*2:
+                asiento = lista_inicial_asientos[counter + 1]
+                dict_final[alumno] = asiento
+                counter += 2
+                break
+    return dict_final
+
+
+hola = output_astar('ASTAR-tests/alumnos1.prob', None, None, ['4XX', '3CX', '1XX', '2XX', '6CX', '5XX'])
+
+print(hola)
