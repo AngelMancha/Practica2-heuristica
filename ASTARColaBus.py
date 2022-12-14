@@ -3,8 +3,8 @@ from queue import Queue
 import sys
 
 
-#PATH = sys.argv[1]
-#numeroHeuristica=sys.argv[2]
+PATH = sys.argv[1]
+numeroHeuristica=sys.argv[2]
 
 
 
@@ -53,6 +53,7 @@ def insertarAlumnoCola(final_queue: Queue) -> int:
     while i < len_queue:
         alumno = final_queue.dequeue()
         print('Soy el alumno ', alumno)
+        print('El alumno anterior es', alumno_anterior)
         if i == 0:
             print('Soy el primer alumno', alumno)
             if 'XX' in alumno:
@@ -95,6 +96,7 @@ def insertarAlumnoCola(final_queue: Queue) -> int:
                     print('El coste que genero es ', g)
 
             if 'CX' in alumno:
+                print('soy el alumno', alumno)
                 if 'XX' in alumno_anterior:
                     g = g + coste_anterior + coste_conflictivo
                     coste_anterior = 1
@@ -105,7 +107,7 @@ def insertarAlumnoCola(final_queue: Queue) -> int:
                     coste_anterior = 1
                     print('El coste que genero es ', g)
 
-                if 'XC' in alumno:
+                if 'CX' in alumno:
                     g = g - coste_anterior + coste_anterior * 2 + coste_conflictivo
                     coste_anterior = 1
                     print('El coste que genero es ', g)
@@ -211,8 +213,10 @@ def aStar(start, goal):
 initial_node=Node()
 final_node=Node()
 
-initial_node.cola_inicial = ['3XX', '5XR', '4CX']
-#initial_node.cola_inicial = manipular_txt.extract_cola_inicial_astar('ASTAR-tests/alumnos1.prob')
+
+initial_node.cola_inicial = manipular_txt.extract_cola_inicial_astar('ASTAR-tests/alumnos1.prob')
+
+
 
 initial_node.cola_final = Queue()
 

@@ -66,7 +66,7 @@ def assign_domain() -> None:
     Una vez hecho esto añade las variables al problema"""
     for i in range(0, len(alumnos)):
         id_alumno, ciclo, conflictivo, movilidad,  hermano = get_caracteristicas(i)
-        id_alumno = str(id_alumno) + str(movilidad) + str(conflictivo)
+        id_alumno = str(id_alumno) + str(conflictivo) + str(movilidad)
         if id_alumno not in dict_alumnos.keys():
             if hermano == 0 and ciclo == 1:
                 asignar_dom_c1(id_alumno)
