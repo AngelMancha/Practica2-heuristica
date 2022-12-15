@@ -21,6 +21,7 @@ class Node():
 
 
 def expandirNodo(current: Node) -> list:
+    """Esta funcion genera los nodos hijos dado un nodo padre"""
     list_children = []
     cola_inicial = current.cola_inicial
     cola_final = current.cola_final
@@ -40,12 +41,12 @@ def expandirNodo(current: Node) -> list:
         elif numeroHeuristica == 2:
             newNode.h = heuristics2(newNode.cola_final)
         list_children.append(newNode)
-
     return list_children
 
 
 
 def insertarAlumnoCola(final_queue: Queue) -> int:
+    """ Esta función inserta un alumno en la cola final y devuelve el coste g """
     coste_conflictivo = 1
     g = 0
     len_queue = final_queue.size()  # numero de alumnos en la cola inicialmente
@@ -125,7 +126,6 @@ def heuristics2(final_queue: Queue) -> int:
     len_queue = final_queue.size()  # numero de alumnos en la cola inicialmente
     while i < len_queue:
         alumno = final_queue.dequeue()
-
         if i == 0:
             if 'XX' in alumno:
                 h += 1
@@ -159,8 +159,6 @@ def aStar(start, goal):
     closedset = set()
     current = start
     openset.add(current)
-
-
     #While the open set is not empty
     while openset:
        # for element in openset:
@@ -173,7 +171,6 @@ def aStar(start, goal):
             path.append(current)
             return path[::-1]
         openset.remove(current)
-
         for nodoExpandido in expandirNodo(current):
             nodoExpandido.parent = current
             openset.add(nodoExpandido)
