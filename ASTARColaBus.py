@@ -35,10 +35,10 @@ def expandirNodo(current: Node) -> list:
             newNode.cola_final.enqueue(e)
         newNode.cola_final.enqueue(i)
         newNode.g = insertarAlumnoCola(newNode.cola_final)
-        """if numeroHeuristica == 1:
+        if numeroHeuristica == 1:
             newNode.h = heuristics1(newNode.cola_final)
         elif numeroHeuristica == 2:
-            newNode.h = heuristics2(newNode.cola_final)"""
+            newNode.h = heuristics2(newNode.cola_final)
         list_children.append(newNode)
 
     return list_children
@@ -153,6 +153,7 @@ def heuristics2(final_queue: Queue) -> int:
 def aStar(start, goal):
     """ Función que implementa el algoritmo A*. Dado un estado inicial, tenemos que conseguir llegar a un estado final.
     En esta función se definen 2 sets, uno de ABIERTO y otro de CERRADO. """
+    global nodos_expandidos
     openset = set()
     closedset = set()
     current = start
@@ -178,6 +179,7 @@ def aStar(start, goal):
         for nodoExpandido in expandirNodo(current):
             nodoExpandido.parent = current
             openset.add(nodoExpandido)
+            nodos_expandidos += 1
 
     #Throw an exception if there is no path
     raise ValueError('No Path Found')
