@@ -1,0 +1,8 @@
+Número de soluciones: 3456
+{'2CR': 2, '4CR': 4, '3CR': 14, '1CR': 16, '5XX': 32}
+Otras posibles soluciones
+{'2CR': 1, '1CR': 3, '4CR': 13, '3CR': 16, '5XX': 20}
+{'4CR': 1, '2CR': 3, '3CR': 13, '1CR': 15, '5XX': 18}
+{'4CR': 1, '2CR': 4, '1CR': 13, '3CR': 15, '5XX': 28}
+{'3CR': 1, '1CR': 4, '4CR': 13, '2CR': 16, '5XX': 31}
+{'3CR': 1, '4CR': 3, '2CR': 13, '1CR': 15, '5XX': 21}

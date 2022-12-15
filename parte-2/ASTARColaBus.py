@@ -6,8 +6,8 @@ from queue import Queue
 
 PATH = sys.argv[1]
 numeroHeuristica=sys.argv[2]
-PATH_OUT_PROB: str = 'ASTAR-tests-output/' + PATH[12:20] + '_' + str(numeroHeuristica) + '.output.prob'
-PATH_OUT_STAT: str = 'ASTAR-tests-output/' + PATH[12:20] + '_' + str(numeroHeuristica) + '.stat'
+PATH_OUT_PROB: str = 'parte-2/ASTAR-tests-output/' + PATH[20:28] + '_' + str(numeroHeuristica) + '.output.prob'
+PATH_OUT_STAT: str = 'parte-2/ASTAR-tests-output/' + PATH[20:28] + '_' + str(numeroHeuristica) + '.stat'
 nodos_expandidos = 0
 
 class Node():
@@ -50,7 +50,7 @@ def insertarAlumnoCola(final_queue: Queue) -> int:
     g = 0
     len_queue = final_queue.size()  # numero de alumnos en la cola inicialmente
     i: int = 0
-    alumno_anterior = None
+    alumno_anterior = ""
     coste_anterior = 0
     while i < len_queue:
         alumno = final_queue.dequeue()
@@ -61,13 +61,11 @@ def insertarAlumnoCola(final_queue: Queue) -> int:
                 g += 3
             if 'CX' in alumno:
                 g += 1
-
         else:
             if 'XX' in alumno:
                 if 'CX' in alumno_anterior:  # alumno conflictivo
                     g += 2
                     coste_anterior = 2
-
                 if 'XR' in alumno_anterior:
                     g = g
                     coste_anterior = 3
@@ -85,11 +83,14 @@ def insertarAlumnoCola(final_queue: Queue) -> int:
                     g += 6
                     coste_anterior = 6
 
+                if 'XR' in alumno_anterior:
+                    g += 1111111111
+                    coste_anterior = 1111111111
+
             if 'CX' in alumno:
                 if 'XX' in alumno_anterior:
                     g = g + coste_anterior + coste_conflictivo
                     coste_anterior = 1
-
                 if 'XR' in alumno_anterior:
                     g = g - coste_anterior + coste_anterior * 2 + coste_conflictivo
                     coste_anterior = 1
@@ -107,7 +108,6 @@ def heuristics1(final_queue: Queue) -> int:
     len_queue = final_queue.size()  # numero de alumnos en la cola inicialmente
     while i < len_queue:
         alumno = final_queue.dequeue()
-
         if 'XX' in alumno:
             h += 1
         if 'XR' in alumno:
@@ -150,6 +150,7 @@ def heuristics2(final_queue: Queue) -> int:
         alumno_anterior = alumno
     return h
 
+
 def aStar(start, goal):
     """ Función que implementa el algoritmo A*. Dado un estado inicial, tenemos que conseguir llegar a un estado final.
     En esta función se definen 2 sets, uno de ABIERTO y otro de CERRADO. """
@@ -163,10 +164,7 @@ def aStar(start, goal):
     #While the open set is not empty
     while openset:
        # for element in openset:
-             #print('Openset cola final ', element.cola_final.display())
-           # print('Openset cola inicial ', element.cola_inicial)
         current = min(openset, key=lambda o:o.g + o.h)  # luego sumar o.h
-
         if current.cola_inicial == goal.cola_inicial:
             path = []
             while current.parent:
@@ -199,7 +197,6 @@ if __name__ == "__main__":
     for i in value:
         final_sol_aux = i.cola_final.display()
         coste = i.g
-    print(coste)
     sol = []
     for i in range(0, len(final_sol_aux)):
         sol.append(final_sol_aux.pop())

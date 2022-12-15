@@ -5,7 +5,7 @@ from itertools import combinations
 
 
 PATH: str = sys.argv[1]
-PATH_OUT: str = 'CSP-tests-output/' + PATH[10:18] + '.output.txt'
+PATH_OUT: str = 'parte-1/CSP-tests-output/' + PATH[18:26] + '.output.txt'
 
 #  Rellenamos la matriz de alumnos obtenida del fichero input
 alumnos = manipular_txt.rellenar_alumnos(PATH)
