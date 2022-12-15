@@ -48,10 +48,9 @@ def sort_dict(sol_dict: dict) -> dict:
     return dict(sorted(sol_dict.items(), key=lambda item: item[1]))
 
 
-def extract_cola_inicial_astar(path: str) -> list[list]:
-    f = open(path)
+def extract_cola_inicial_astar(path_in: str):
+    f = open(path_in)
     linea = f.readline()
-    print(linea[63], "SLDFJLSDKJFLSD")
     alumno = ""
     lista_ordenada = []
     cola_inical = []
@@ -60,43 +59,55 @@ def extract_cola_inicial_astar(path: str) -> list[list]:
             lista_ordenada.append(alumno)
             alumno = ""
             continue
-
         if character != "{" and character != "}" and character != "'" and character != "," and character != ":":
             alumno = alumno + character
-
-    asiento_ultimo = linea[len(linea)-4] + linea[len(linea)-3]
+    asiento_ultimo = linea[len(linea)-3] + linea[len(linea)-2]
     lista_ordenada.append(asiento_ultimo)
-    print(asiento_ultimo, "ALOHA")
     f.close()
-
     for item in lista_ordenada:
         if 'C' in item or 'X' in item or 'R' in item:
             cola_inical.append(item)
-
-
     return lista_ordenada, cola_inical
 
 
-def output_astar(dict_alumno: str, path_out: str, cola_inicial: list, cola_final: list):
-    """Esta función genera 2 ficheros: 'alumnosXH.output.prob  y 'alumnosXH.stat', donde X es el número
+def output_astar_prob(path_in: str, path_out: str, cola_final: list) -> None:
+    """Esta función genera 2 ficheros: 'alumnosXH.output.prob donde X es el número
     del test y H es la heurística que utiliza."""
-    value = extract_cola_inicial_astar('ASTAR-tests/alumnos1.prob')
+    f = open(path_in)
+    fichero_original = f.readline()
+    value = extract_cola_inicial_astar(path_in)
     lista_inicial_asientos = value[0]
-    dict_final= {}
-    f = open(dict_alumno)
-    linea = f.readline()
+    dict_final = convertir_diccionario(lista_inicial_asientos, cola_final)
+    print('Generando fichero', path_out)
+    file = open(path_out, 'w')
+    file.write('INCIAL: ' + fichero_original + os.linesep)
+    file.write('FINAL:  ' + str(dict_final))
+    print('Solución generada')
+
+
+def generar_fichero_stat(tiempo: int, coste: int, longitud: int, nodos_exp: int, path_out: str):
+    """Esta funcion genera un fichero con la extensión 'alumnosXH.stat', donde X es el número
+    del test y H es la heurística que utiliza."""
+    print('Generando fichero', path_out)
+    file = open(path_out, 'w')
+    file.write('Tiempo total: ' + str(tiempo) + os.linesep)
+    file.write('Coste total:  ' + str(coste) + os.linesep)
+    file.write('Longitud del plan:  ' + str(longitud) + os.linesep)
+    file.write('Nodos expandidos:  ' + str(nodos_exp) + os.linesep)
+    print('Solución generada')
+
+
+def convertir_diccionario(lista_inicial_asientos: list, cola_final: list) -> dict:
+    """Esta función devuelve un diccionario con los asientos correspondientes a los alumnos"""
+    dict_final = {}
     len_cola = len(cola_final)
     counter = 0
     for alumno in cola_final:
         for item in lista_inicial_asientos:
-            if item == alumno and counter < len_cola*2:
+            if item == alumno and counter < len_cola * 2:
                 asiento = lista_inicial_asientos[counter + 1]
-                dict_final[alumno] = asiento
-                counter += 2
+                dict_final[alumno] = int(asiento)
                 break
+            counter += 1
+        counter = 0
     return dict_final
-
-
-hola = output_astar('ASTAR-tests/alumnos1.prob', None, None, ['4XX', '3CX', '1XX', '2XX', '6CX', '5XX'])
-
-print(hola)

@@ -1,12 +1,14 @@
 import manipular_txt
-from queue import Queue
 import sys
+import time
+from queue import Queue
 
 
 PATH = sys.argv[1]
 numeroHeuristica=sys.argv[2]
-PATH_OUT: str = 'ASTAR-tests-output/' + PATH[19:27] + '_' + str(numeroHeuristica) + '.output.prob'
-
+PATH_OUT_PROB: str = 'ASTAR-tests-output/' + PATH[12:20] + '_' + str(numeroHeuristica) + '.output.prob'
+PATH_OUT_STAT: str = 'ASTAR-tests-output/' + PATH[12:20] + '_' + str(numeroHeuristica) + '.stat'
+nodos_expandidos = 0
 
 class Node():
     def __init__(self, parent=None, position=None):
@@ -52,70 +54,51 @@ def insertarAlumnoCola(final_queue: Queue) -> int:
     coste_anterior = 0
     while i < len_queue:
         alumno = final_queue.dequeue()
-        print('Soy el alumno ', alumno)
-        print('El alumno anterior es', alumno_anterior)
         if i == 0:
-            print('Soy el primer alumno', alumno)
             if 'XX' in alumno:
                 g += 1
-                print('El coste que genero es ', g)
             if 'XR' in alumno:
                 g += 3
-                print('El coste que genero es ', g)
-
             if 'CX' in alumno:
                 g += 1
-                print('El coste que genero es ', g)
 
         else:
             if 'XX' in alumno:
                 if 'CX' in alumno_anterior:  # alumno conflictivo
                     g += 2
                     coste_anterior = 2
-                    print('El coste que genero es ', g)
 
                 if 'XR' in alumno_anterior:
                     g = g
                     coste_anterior = 3
-                    print('El coste que genero es ', g)
 
                 if 'XX' in alumno_anterior:
                     g += 1
                     coste_anterior = 1
-                    print('El coste que genero es ', g)
 
             if 'XR' in alumno:
                 if 'XX' in alumno_anterior:
                     g += 3
                     coste_anterior = 3
-                    print('El coste que genero es ', g)
 
                 if 'CX' in alumno_anterior:
                     g += 6
                     coste_anterior = 6
-                    print('El coste que genero es ', g)
 
             if 'CX' in alumno:
-                print('soy el alumno', alumno)
                 if 'XX' in alumno_anterior:
                     g = g + coste_anterior + coste_conflictivo
                     coste_anterior = 1
-                    print('El coste que genero es ', g)
 
                 if 'XR' in alumno_anterior:
                     g = g - coste_anterior + coste_anterior * 2 + coste_conflictivo
                     coste_anterior = 1
-                    print('El coste que genero es ', g)
-
                 if 'CX' in alumno:
                     g = g - coste_anterior + coste_anterior * 2 + coste_conflictivo
                     coste_anterior = 1
-                    print('El coste que genero es ', g)
-
         final_queue.enqueue(alumno)
         i += 1
         alumno_anterior = alumno
-    print('El coste total de esta cola es ', g)
     return g
 
 def heuristics1(final_queue: Queue) -> int:
@@ -124,6 +107,7 @@ def heuristics1(final_queue: Queue) -> int:
     len_queue = final_queue.size()  # numero de alumnos en la cola inicialmente
     while i < len_queue:
         alumno = final_queue.dequeue()
+
         if 'XX' in alumno:
             h += 1
         if 'XR' in alumno:
@@ -183,9 +167,6 @@ def aStar(start, goal):
         current = min(openset, key=lambda o:o.g + o.h)  # luego sumar o.h
 
         if current.cola_inicial == goal.cola_inicial:
-            #print("La cola final es: ", current.cola_final.display())
-            #print("El coste de g es: ", current.g)
-            print("COSTE FINAL", insertarAlumnoCola(current.cola_final))
             path = []
             while current.parent:
                 path.append(current)
@@ -195,12 +176,6 @@ def aStar(start, goal):
         openset.remove(current)
 
         for nodoExpandido in expandirNodo(current):
-           # print("EXPANDES", nodoExpandido.cola_final.display())
-            print('\nCola inicial nodo nodoExpandido: ', nodoExpandido.cola_inicial)
-            print('Cola final nodo nodoExpandido: ', nodoExpandido.cola_final.display())
-            #print('Coste parcial g del nodo nodoExpandido', nodoExpandido.g)
-            #print('Coste heurística h del nodo nodoExpandido', nodoExpandido.h)
-            #print('Función de evaluación nodo nodoExpandido', nodoExpandido.g + nodoExpandido.h)
             nodoExpandido.parent = current
             openset.add(nodoExpandido)
 
@@ -210,26 +185,24 @@ def aStar(start, goal):
 
 
 #  Definimos los estados iniciales y finales
-
-initial_node = Node()
-final_node = Node()
-
-
-initial_node.cola_inicial = manipular_txt.extract_cola_inicial_astar('ASTAR-tests/alumnos1.prob')[0]
-
-initial_node.cola_final = Queue()
-
-final_node.cola_inicial = []
-final_node.cola_final = Queue()
-
-
-value = aStar(initial_node, final_node)
-for i in value:
-    final_sol_aux = i.cola_final.display()
-print(final_sol_aux)
-sol = []
-for i in range(0, len(final_sol_aux)):
-    sol.append(final_sol_aux.pop())
-
-print(sol)
-
+if __name__ == "__main__":
+    initial_node = Node()  # estado incial
+    final_node = Node()   # estado final
+    initial_node.cola_inicial = manipular_txt.extract_cola_inicial_astar(PATH)[1]
+    initial_node.cola_final = Queue()
+    final_node.cola_inicial = []
+    final_node.cola_final = Queue()
+    inicio = time.time()
+    value = aStar(initial_node, final_node)
+    for i in value:
+        final_sol_aux = i.cola_final.display()
+        coste = i.g
+    print(coste)
+    sol = []
+    for i in range(0, len(final_sol_aux)):
+        sol.append(final_sol_aux.pop())
+    fin = time.time()
+    tiempo_total = (fin - inicio) * 1000
+    longitud_plan = len(sol)
+    output = manipular_txt.output_astar_prob(PATH, PATH_OUT_PROB, sol)
+    output_stat = manipular_txt.generar_fichero_stat(int(tiempo_total), coste, longitud_plan, nodos_expandidos, PATH_OUT_STAT)
