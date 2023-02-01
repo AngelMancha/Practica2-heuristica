@@ -103,6 +103,7 @@ def insertarAlumnoCola(final_queue: Queue) -> int:
         alumno_anterior = alumno
     return g
 
+#holi
 def heuristics1(final_queue: Queue) -> int:
     """ Esta heurística depende del tipo de alumno que estemos insertando en la cola. """
     h, i = 0, 0
